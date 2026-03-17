@@ -2,7 +2,7 @@ import httpx
 import json
 import os
 
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
+GEMINI_API_KEY = os.getenv("AIzaSyCKWSKFOPejIN1F16EH8A_5W57R6vrtfTg", "")
 GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
 
 SYSTEM_PROMPT = """You are a senior stock market analyst specializing in Indian markets — NSE, BSE, Nifty 50, Bank Nifty.
