@@ -25,7 +25,6 @@ def root():
 
 @app.get("/debug")
 async def debug():
-    # Test Gemini with one simple article
     try:
         result = await analyze_article(
             "RBI cuts repo rate by 25 basis points to boost economy",
@@ -47,8 +46,8 @@ async def get_news(
         if cached:
             return cached
 
-    # Fetch last 3 days of news
-    articles = fetch_all_news(max_per_feed=12, days_back=3)
+    # Fetch fewer articles to prevent Render from timing out
+    articles = fetch_all_news(max_per_feed=3, days_back=1)
 
     async def enrich(article):
         try:
@@ -66,7 +65,6 @@ async def get_news(
                 "is_market_moving": False
             }
 
-    # Analyze all articles with small delay to avoid rate limiting
     results = []
     batch_size = 5
     for i in range(0, len(articles), batch_size):
@@ -74,13 +72,11 @@ async def get_news(
         batch_results = await asyncio.gather(*[enrich(a) for a in batch])
         results.extend(batch_results)
         if i + batch_size < len(articles):
-            await asyncio.sleep(1)  # avoid Gemini rate limit
+            await asyncio.sleep(1)
 
-    # Filter by date if requested
     if date:
         results = [r for r in results if r.get("published_date") == date]
 
-    # Sort by published time descending (newest first), then by score
     results = sorted(results, key=lambda x: (
         x.get("published_ts", 0),
         abs(x.get("score", 0))
@@ -91,7 +87,6 @@ async def get_news(
 
 @app.get("/dates")
 def get_available_dates():
-    # Returns last 3 dates for the date filter dropdown
     from datetime import timedelta
     today = datetime.now(timezone.utc)
     dates = []
