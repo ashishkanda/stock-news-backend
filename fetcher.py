@@ -29,7 +29,6 @@ def is_junk(title):
     return any(re.search(p, t) for p in JUNK_PATTERNS)
 
 def parse_date(entry):
-    # Try to parse the published date from RSS entry
     try:
         if hasattr(entry, 'published_parsed') and entry.published_parsed:
             return datetime(*entry.published_parsed[:6], tzinfo=timezone.utc)
@@ -40,7 +39,7 @@ def parse_date(entry):
         pass
     return datetime.now(timezone.utc)
 
-def fetch_all_news(max_per_feed=12, days_back=3):
+def fetch_all_news(max_per_feed=3, days_back=1):
     articles = []
     seen = set()
     cutoff = datetime.now(timezone.utc) - timedelta(days=days_back)
@@ -64,7 +63,6 @@ def fetch_all_news(max_per_feed=12, days_back=3):
 
                 pub_date = parse_date(entry)
 
-                # Skip news older than days_back
                 if pub_date < cutoff:
                     continue
 
